@@ -8,7 +8,7 @@
               <span>星鲨出租玩法极限复投策略简介</span>
             </div>
           </template>
-          <p>星鲨出租玩法中，一星鲨鱼一天出租价格设置为15sea，扣除税款后可获得利润14.3625sea。</p>
+          <p>星鲨出租玩法中，一星鲨鱼一天出租价格设置为14sea，扣除税款后可获得利润13.405sea。</p>
           <p>本策略中都是基于上述一星鲨鱼进行的，主要策略为每日累计获取利润，每当累计利润可以购买一条新的鲨鱼时则执行购买操作。在实际操作过程中，可能存在额外投入以及利润提现情况，对此也一并计算，将相关参数设定为变量以便调整，从而找到合适自身情况的最佳策略。</p>
         </el-card>
       </el-col>
@@ -142,22 +142,24 @@
 <script setup lang="ts">
 import { reactive } from 'vue';
 import moment from 'moment'
+import { useStorage } from '@vueuse/core'
 
-const state = reactive({
-  bnb_usdt_price: 400,
-  sea_usdt_price: 1.7,
-  shark_bnb_price: 2,
+
+const state = useStorage('sss-state', {
+  bnb_usdt_price: 380,
+  sea_usdt_price: 0.9,
+  shark_bnb_price: 1.2,
   shark_sea_price: 500,
   income_usdt_per_week: 1500,
   day_per_week: 7,
   week_per_month: 4,
   month_per_year: 12,
   out_usdt_per_month: 8000,
-  init_shark_count: 11,
-  sea_profit_per_shark_per_day: 14.3625,
+  init_shark_count: 38,
+  sea_profit_per_shark_per_day: 13.405,
   min_shark_count: 1,
   day_length: 306,
-  begin_date: new Date('2022-03-01')
+  begin_date: new Date()
 })
 
 const calState = reactive({
@@ -189,7 +191,7 @@ const f = () => {
     sea_profit_per_shark_per_day,
     min_shark_count,
     day_length,
-  } = state;
+  } = state.value;
 
   bnb_usdt_price = +bnb_usdt_price;
   sea_usdt_price = +sea_usdt_price;
@@ -220,7 +222,7 @@ const f = () => {
     // 当前鲨鱼数量
     if (i === 0) {
       current_shark_count = +init_shark_count;
-      total_cost = state.init_shark_count * state.shark_bnb_price * state.bnb_usdt_price;
+      total_cost = +state.value.init_shark_count * +state.value.shark_bnb_price * +state.value.bnb_usdt_price;
     } else {
       current_shark_count = res[i - 1].current_shark_count;
       total_usdt_profit = res[i - 1].total_usdt_profit;
@@ -305,10 +307,10 @@ const handleClick = () => {
       let tempItem = {
         ...item,
         current_usdt_profit: item.total_usdt_profit.toFixed(0),
-        total_income: (item.out_usdt_profit + item.total_usdt_profit + item.current_shark_count * state.shark_bnb_price * state.bnb_usdt_price).toFixed(0),
-        date: moment(state.begin_date).add(idx, 'days').format('L'),
-        per_day_usdt_profit: (item.current_shark_count * state.sea_profit_per_shark_per_day * state.sea_usdt_price).toFixed(0),
-        shark_usdt_value: (item.current_shark_count * state.shark_bnb_price * state.bnb_usdt_price).toFixed(0)
+        total_income: (item.out_usdt_profit + item.total_usdt_profit + item.current_shark_count * +state.value.shark_bnb_price * +state.value.bnb_usdt_price).toFixed(0),
+        date: moment(state.value.begin_date).add(idx, 'days').format('L'),
+        per_day_usdt_profit: (item.current_shark_count * +state.value.sea_profit_per_shark_per_day * +state.value.sea_usdt_price).toFixed(0),
+        shark_usdt_value: (item.current_shark_count * +state.value.shark_bnb_price * +state.value.bnb_usdt_price).toFixed(0)
       }
       tempItem.total_profit = (tempItem.total_income - tempItem.total_cost).toFixed(0);
       return tempItem;
@@ -319,7 +321,7 @@ const handleClick = () => {
     calState.current_usdt_profit = lastItem.total_usdt_profit;
     calState.out_usdt_profit = lastItem.out_usdt_profit;
     calState.total_cost = lastItem.total_cost;
-    calState.total_income = lastItem.out_usdt_profit + lastItem.total_usdt_profit + lastItem.current_shark_count * state.shark_bnb_price * state.bnb_usdt_price;
+    calState.total_income = lastItem.out_usdt_profit + lastItem.total_usdt_profit + lastItem.current_shark_count * +state.value.shark_bnb_price * +state.value.bnb_usdt_price;
   } catch (e) {
     console.error(e)
   }
