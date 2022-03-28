@@ -4,9 +4,11 @@ import p1 from './pages/p1/index.vue'
 
 <template>
   <main class="main">
-    <section>
-      <p1></p1>
+    <section class="nav">
+      <router-link to="/" class="nav-item">sss</router-link>
+      <router-link to="/xx" class="nav-item">xx</router-link>
     </section>
+    <router-view></router-view>
   </main>
 </template>
 
@@ -27,5 +29,16 @@ import p1 from './pages/p1/index.vue'
 .main {
   width: 1080px;
   margin: 0 auto;
+}
+
+.nav {
+  height: 64px;
+  box-sizing: border-box;
+  font-size: 28px;
+  padding: 12px;
+}
+
+.nav-item {
+  margin: 0 12px;
 }
 </style>
